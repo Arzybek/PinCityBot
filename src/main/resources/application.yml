@@ -1,0 +1,3 @@
+bot:
+  name: PinCityBot
+  token:  {$BOT_TOKEN:}
