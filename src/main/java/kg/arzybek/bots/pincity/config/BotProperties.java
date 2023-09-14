@@ -4,16 +4,14 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 @Configuration
+@ConfigurationProperties(prefix = "bot")
 @Data
 @PropertySource("classpath:application.yml")
-@ConfigurationProperties(prefix = "bot")
-@Component
-public class BotConfig {
+public class BotProperties {
 
-    String botName;
+    String name;
 
     String token;
 

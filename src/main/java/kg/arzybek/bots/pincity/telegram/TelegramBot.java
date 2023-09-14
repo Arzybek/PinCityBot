@@ -1,9 +1,9 @@
 package kg.arzybek.bots.pincity.telegram;
 
-import kg.arzybek.bots.pincity.config.BotConfig;
-import kg.arzybek.bots.pincity.utils.Consts;
+import kg.arzybek.bots.pincity.config.BotProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,16 +15,17 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
 
-    private final BotConfig botConfig;
+    @Autowired
+    private final BotProperties botProperties;
 
     @Override
     public String getBotUsername() {
-        return botConfig.getBotName();
+        return botProperties.getName();
     }
 
     @Override
     public String getBotToken() {
-        return botConfig.getToken();
+        return botProperties.getToken();
     }
 
     @Override
@@ -32,21 +33,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
+            long id = update.getMessage().getFrom().getId();
 
             switch (messageText) {
                 case "/start":
-                    startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
+                    sendMessage(chatId, String.valueOf(id));
                     break;
                 default: {
+                    sendMessage(chatId, "ERROR");
                 }
             }
         }
-
-    }
-
-    private void startCommandReceived(Long chatId, String name) {
-        String answer = Consts.START_MESSAGE;
-        sendMessage(chatId, answer);
     }
 
     private void sendMessage(Long chatId, String textToSend) {

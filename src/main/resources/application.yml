@@ -1,3 +1,32 @@
+spring:
+  application:
+    name: pin-city-bot
+  main:
+    banner-mode: off
+  datasource:
+    url: ${POSTGRES_JDBC_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 1
+      auto-commit: false
+  jpa:
+    show-sql: ${SHOW_SQL:true}
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.default_schema: ${POSTGRES_SCHEMA:pins}
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    default-schema: ${POSTGRES_SCHEMA:pins}
+    change-log: classpath:/${POSTGRES_SCHEMA:pins}/master.yml
+    database-change-log-table: _databasechangelog
+    database-change-log-lock-table: _databasechangeloglock
+
 bot:
-  name: PinCityBot
-  token:  {$BOT_TOKEN:}
+  name: "PinCityBot"
+  token: {$BOT_TOKEN:}
