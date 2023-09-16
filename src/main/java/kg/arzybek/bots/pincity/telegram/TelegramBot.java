@@ -1,6 +1,7 @@
 package kg.arzybek.bots.pincity.telegram;
 
 import kg.arzybek.bots.pincity.config.BotProperties;
+import kg.arzybek.bots.pincity.telegram.commands.CommandsHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,25 +32,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
-            long id = update.getMessage().getFrom().getId();
+            if (update.getMessage().getText().startsWith("/")) {
+                sendMessage(CommandsHandler.handleCommands(update));
+            } else {
 
-            switch (messageText) {
-                case "/start":
-                    sendMessage(chatId, String.valueOf(id));
-                    break;
-                default: {
-                    sendMessage(chatId, "ERROR");
-                }
             }
         }
     }
 
-    private void sendMessage(Long chatId, String textToSend) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(textToSend);
+    private void sendMessage(SendMessage sendMessage) {
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {

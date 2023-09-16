@@ -12,6 +12,14 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <insert tableName="cities">
+            <column name="id" value="5961dce1-ca0d-4fb7-aa2b-358f831ec638"/>
+            <column name="name" value="Бишкек"/>
+        </insert>
+        <insert tableName="cities">
+            <column name="id" value="7d2c52a6-cf4e-400b-9e4b-c32ee6e0917e"/>
+            <column name="name" value="Екатеринбург"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>
