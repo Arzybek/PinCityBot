@@ -1,23 +1,32 @@
 package kg.arzybek.bots.pincity.telegram.commands;
 
 import kg.arzybek.bots.pincity.utils.Consts;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+@Component
 public class CommandsHandler {
-    public static final Map<String, BiFunction<Long, String, SendMessage>> COMMANDS = Map.of(
-            "/start", StartCommand::apply
-    );
 
-    public static SendMessage handleCommands(Update update) {
+    private final StartCommand startCommand;
+
+    private final Map<String, BiFunction<Long, String, SendMessage>> commands;
+
+    public CommandsHandler(@Autowired StartCommand startCommand) {
+        this.startCommand = startCommand;
+        this.commands = Map.of(
+                "/start", startCommand::apply
+        );
+    }
+
+    public SendMessage handleCommands(Update update) {
         String messageText = update.getMessage().getText();
         long chatId = update.getMessage().getChatId();
-        var command = COMMANDS.get(messageText);
+        var command = commands.get(messageText);
 
         if (command != null) {
             return command.apply(chatId, messageText);

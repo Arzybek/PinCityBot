@@ -3,6 +3,7 @@ package kg.arzybek.bots.pincity.telegram;
 import kg.arzybek.bots.pincity.config.BotProperties;
 import kg.arzybek.bots.pincity.telegram.commands.CommandsHandler;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
 
-    @Autowired
-    private final BotProperties botProperties;
+    public final BotProperties botProperties;
+
+    public final CommandsHandler commandsHandler;
 
     @Override
     public String getBotUsername() {
@@ -33,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (update.getMessage().getText().startsWith("/")) {
-                sendMessage(CommandsHandler.handleCommands(update));
+                sendMessage(commandsHandler.handleCommands(update));
             } else {
 
             }
