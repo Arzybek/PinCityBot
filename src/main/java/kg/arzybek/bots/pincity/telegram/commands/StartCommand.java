@@ -1,8 +1,12 @@
 package kg.arzybek.bots.pincity.telegram.commands;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kg.arzybek.bots.pincity.data.CityEntity;
 import kg.arzybek.bots.pincity.data.CityRepository;
+import kg.arzybek.bots.pincity.telegram.callbacks.Callback;
+import kg.arzybek.bots.pincity.telegram.callbacks.CallbackType;
 import kg.arzybek.bots.pincity.utils.Consts;
+import kg.arzybek.bots.pincity.utils.JsonHandler;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +25,23 @@ public class StartCommand {
 
     private final CityRepository repository;
 
-    public SendMessage apply(Long chatId, String text){
+    public SendMessage apply(Long chatId, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(Consts.START_MESSAGE);
+
         List<CityEntity> allCities = repository.findAll();
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        for(var city: allCities) {
-            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText(city.getName());
-            inlineKeyboardButton1.setCallbackData(city.getId().toString());
-            keyboardButtonsRow1.add(inlineKeyboardButton1);
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        for (var city : allCities) {
+            InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+            inlineKeyboardButton.setText(city.getName());
+            String jsonCallback = JsonHandler.toJson(List.of(CallbackType.CITY_CHOOSE, city.getId().toString()));
+            inlineKeyboardButton.setCallbackData(jsonCallback);
+            keyboardButtonsRow.add(inlineKeyboardButton);
         }
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(keyboardButtonsRow1);
+        rowList.add(keyboardButtonsRow);
         inlineKeyboardMarkup.setKeyboard(rowList);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;

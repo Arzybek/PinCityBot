@@ -1,7 +1,9 @@
 package kg.arzybek.bots.pincity.telegram;
 
 import kg.arzybek.bots.pincity.config.BotProperties;
+import kg.arzybek.bots.pincity.telegram.callbacks.CallbacksHandler;
 import kg.arzybek.bots.pincity.telegram.commands.CommandsHandler;
+import kg.arzybek.bots.pincity.utils.Consts;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public final CommandsHandler commandsHandler;
 
+    public final CallbacksHandler callbacksHandler;
+
     @Override
     public String getBotUsername() {
         return botProperties.getName();
@@ -34,11 +38,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            String chatId = update.getMessage().getChatId().toString();
             if (update.getMessage().getText().startsWith("/")) {
                 sendMessage(commandsHandler.handleCommands(update));
             } else {
-
+                sendMessage(new SendMessage(chatId, Consts.CANT_UNDERSTAND));
             }
+        } else if (update.hasCallbackQuery()) {
+            sendMessage(callbacksHandler.handleCallbacks(update));
         }
     }
 

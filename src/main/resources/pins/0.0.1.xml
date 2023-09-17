@@ -22,4 +22,15 @@
         </insert>
     </changeSet>
 
+    <changeSet id="0.0.1-2" author="kat">
+        <createTable tableName="chats_cities">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="city_id" type="uuid">
+                <constraints nullable="false" foreignKeyName="fk_chats_cities" references="cities(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

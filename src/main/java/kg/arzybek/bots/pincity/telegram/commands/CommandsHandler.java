@@ -1,6 +1,7 @@
 package kg.arzybek.bots.pincity.telegram.commands;
 
 import kg.arzybek.bots.pincity.utils.Consts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 @Component
+@Slf4j
 public class CommandsHandler {
 
     private final StartCommand startCommand;
@@ -30,7 +32,8 @@ public class CommandsHandler {
 
         if (command != null) {
             return command.apply(chatId, messageText);
-        } else {
+        }
+        else {
             return new SendMessage(String.valueOf(chatId), Consts.UNKNOWN_COMMAND);
         }
     }
