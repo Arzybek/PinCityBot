@@ -56,8 +56,22 @@
             <column name="updated_by" type="bigint">
                 <constraints nullable="true"/>
             </column>
+            <column name="state" type="varchar">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
         <loadData file="data/places.csv" tableName="places" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="0.0.1-4" author="kat">
+        <createTable tableName="chats_pins">
+            <column name="chat_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="place_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_chats_pins_places" references="places(id)"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

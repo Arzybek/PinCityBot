@@ -14,26 +14,25 @@ import java.util.function.BiFunction;
 @Slf4j
 public class CommandsHandler {
 
-    private final StartCommand startCommand;
+    private final Map<String, Command> commands;
 
-    private final Map<String, BiFunction<Long, String, SendMessage>> commands;
-
-    public CommandsHandler(@Autowired StartCommand startCommand) {
-        this.startCommand = startCommand;
+    public CommandsHandler(@Autowired StartCommand startCommand,
+                           @Autowired PinCommand pinCommand) {
         this.commands = Map.of(
-                "/start", startCommand::apply
+                "/start", startCommand,
+                "/pin", pinCommand
         );
     }
 
     public SendMessage handleCommands(Update update) {
         String messageText = update.getMessage().getText();
+        String command = messageText.split(" ")[0];
         long chatId = update.getMessage().getChatId();
-        var command = commands.get(messageText);
 
-        if (command != null) {
-            return command.apply(chatId, messageText);
-        }
-        else {
+        var commandHandler = commands.get(command);
+        if (commandHandler != null) {
+            return commandHandler.apply(update);
+        } else {
             return new SendMessage(String.valueOf(chatId), Consts.UNKNOWN_COMMAND);
         }
     }

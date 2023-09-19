@@ -7,5 +7,8 @@ public enum CallbackType {
     ADDRESS_CHOOSE,
 
     PIN_OK,
-    PIN_WRONG
+    PIN_WRONG,
+
+    PIN_ADD,
+    PIN_DONT_ADD
 }

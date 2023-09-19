@@ -1,6 +1,9 @@
 package kg.arzybek.bots.pincity.data;
 
+import jakarta.transaction.Transactional;
 import kg.arzybek.bots.pincity.dto.AddressDto;
+import kg.arzybek.bots.pincity.dto.PinDto;
+import kg.arzybek.bots.pincity.dto.PinState;
 import kg.arzybek.bots.pincity.dto.PlaceType;
 import org.springframework.stereotype.Repository;
 
@@ -32,13 +35,38 @@ public class PlacesRepository extends BaseRepository<PlacesEntity> {
                 .getResultList();
     }
 
-    public String findPin(Integer addressId) {
+    public PinDto findPin(Integer addressId) {
         return em.createQuery("""
-                        select p.pin
+                        select new kg.arzybek.bots.pincity.dto.PinDto(p.pin, p.state)
                         from PlacesEntity p
                         where p.id = :id
-                        """, String.class)
+                        """, PinDto.class)
                 .setParameter("id", addressId)
                 .getSingleResult();
+    }
+
+    @Transactional
+    public int updateState(PinState state, Integer addressId, Long userId) {
+        return em.createQuery("""
+                        update PlacesEntity p
+                        set p.state =: state, p.updatedBy =: userId
+                        where p.id = :id
+                        """)
+                .setParameter("id", addressId)
+                .setParameter("state", state)
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
+
+    public int updatePin(Integer addressId, String pin, Long userId) {
+        return em.createQuery("""
+                        update PlacesEntity p
+                        set p.pin =: pin, p.updatedBy =: userId
+                        where p.id = :id
+                        """)
+                .setParameter("id", addressId)
+                .setParameter("pin", pin)
+                .setParameter("userId", userId)
+                .executeUpdate();
     }
 }

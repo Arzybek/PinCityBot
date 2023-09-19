@@ -9,6 +9,7 @@ import kg.arzybek.bots.pincity.utils.JsonHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -17,11 +18,12 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class TypeChooseCallback {
+public class TypeChooseCallback implements CallbackHandler {
 
     private final PlacesRepository placesRepository;
 
-    public SendMessage apply(Callback callback, Long chatId) {
+    public SendMessage apply(Callback callback, Update update) {
+        long chatId = update.getCallbackQuery().getMessage().getChatId();
         PlaceType placeType = PlaceType.valueOf(callback.getData());
         SendMessage answer = new SendMessage(String.valueOf(chatId), String.format(Consts.CHOSE_TYPE_MESSAGE, placeType.name));
         addAddressesKeyboard(answer, placeType, chatId);

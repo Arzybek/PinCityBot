@@ -1,6 +1,7 @@
 package kg.arzybek.bots.pincity.data;
 
 import jakarta.persistence.*;
+import kg.arzybek.bots.pincity.dto.PinState;
 import kg.arzybek.bots.pincity.dto.PlaceType;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,5 +36,10 @@ public class PlacesEntity {
     private String pin;
 
     @Column(name = "updated_by")
-    private Long upadtedBy;
+    private Long updatedBy;
+
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    private PinState state;
+
 }

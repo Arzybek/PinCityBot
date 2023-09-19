@@ -1,37 +1,32 @@
 package kg.arzybek.bots.pincity.telegram.callbacks;
 
-import kg.arzybek.bots.pincity.data.ChatCitiesRepository;
-import kg.arzybek.bots.pincity.data.ChatsCitiesEntity;
-import kg.arzybek.bots.pincity.data.CityRepository;
-import kg.arzybek.bots.pincity.data.PlacesRepository;
-import kg.arzybek.bots.pincity.dto.PlaceType;
-import kg.arzybek.bots.pincity.telegram.commands.StartCommand;
 import kg.arzybek.bots.pincity.utils.Consts;
 import kg.arzybek.bots.pincity.utils.JsonHandler;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 @Component
 public class CallbacksHandler {
 
-    private final Map<CallbackType, BiFunction<Callback, Long, SendMessage>> callbacks;
+    private final Map<CallbackType, CallbackHandler> callbacks;
 
     public CallbacksHandler(@Autowired TypeChooseCallback typeChooseCallback,
                             @Autowired CityChooseCallback cityChooseCallback,
-                            @Autowired AddressChooseCallback addressChooseCallback) {
-        this.callbacks = Map.of(CallbackType.TYPE_CHOOSE, typeChooseCallback::apply,
-                CallbackType.CITY_CHOOSE, cityChooseCallback::apply,
-                CallbackType.ADDRESS_CHOOSE, addressChooseCallback::apply
+                            @Autowired AddressChooseCallback addressChooseCallback,
+                            @Autowired PinReviewCallback pinReviewCallback,
+                            @Autowired PinActionCallback pinActionCallback) {
+        this.callbacks = Map.of(CallbackType.TYPE_CHOOSE, typeChooseCallback,
+                CallbackType.CITY_CHOOSE, cityChooseCallback,
+                CallbackType.ADDRESS_CHOOSE, addressChooseCallback,
+                CallbackType.PIN_OK, pinReviewCallback,
+                CallbackType.PIN_WRONG, pinReviewCallback,
+                CallbackType.PIN_ADD, pinActionCallback,
+                CallbackType.PIN_DONT_ADD, pinActionCallback
         );
     }
 
@@ -44,8 +39,8 @@ public class CallbacksHandler {
             answer = new SendMessage(String.valueOf(chatId), Consts.ERROR);
         } else {
             Callback callback = Callback.builder().callbackType(CallbackType.valueOf(list.get(0))).data(list.get(1)).build();
-            BiFunction<Callback, Long, SendMessage> callbackBiFunction = callbacks.get(callback.getCallbackType());
-            answer = callbackBiFunction.apply(callback, chatId);
+            CallbackHandler callbackBiFunction = callbacks.get(callback.getCallbackType());
+            answer = callbackBiFunction.apply(callback, update);
         }
 
         return answer;

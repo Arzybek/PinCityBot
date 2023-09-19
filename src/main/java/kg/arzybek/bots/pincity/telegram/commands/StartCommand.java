@@ -8,6 +8,7 @@ import kg.arzybek.bots.pincity.utils.JsonHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -16,16 +17,23 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class StartCommand {
+public class StartCommand implements Command {
 
     private final CityRepository repository;
 
-    public SendMessage apply(Long chatId, String text) {
+    public SendMessage apply(Update update) {
+        long chatId = update.getMessage().getChatId();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(Consts.START_MESSAGE);
 
         List<CityEntity> allCities = repository.findAll();
+
+        addKeyboard(sendMessage, allCities);
+        return sendMessage;
+    }
+
+    private void addKeyboard(SendMessage sendMessage, List<CityEntity> allCities) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         for (var city : allCities) {
@@ -39,7 +47,6 @@ public class StartCommand {
         rowList.add(keyboardButtonsRow);
         inlineKeyboardMarkup.setKeyboard(rowList);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        return sendMessage;
     }
 
 }
