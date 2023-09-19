@@ -22,6 +22,6 @@ public class ChatsCitiesEntity {
     private Long chatId;
 
     @Column(name = "city_id")
-    private UUID cityId;
+    private Integer cityId;
 
 }

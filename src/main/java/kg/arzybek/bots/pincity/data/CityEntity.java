@@ -19,7 +19,7 @@ public class CityEntity {
 
     @Id
     @Column(name = "id")
-    private UUID id;
+    private Integer id;
 
     @Column(name = "name")
     private String name;

@@ -17,7 +17,7 @@ public class CityRepository extends BaseRepository<CityEntity> {
                 .getResultList();
     }
 
-    public String getName(UUID id) {
+    public String getName(Integer id) {
         return em.createQuery("""
                         select c.name
                         from CityEntity c
